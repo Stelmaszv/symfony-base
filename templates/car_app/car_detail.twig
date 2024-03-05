@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block body %}
+
+<h2>{{title}}</h2>
+
+{{object.name}} <br>
+
+<a href="{{path('delete_car',{id:object.id})}}">Delete</a><br> 
+<a href="{{path('api_car',{id:object.id})}}">API</a><br> 
+
+{% endblock %}

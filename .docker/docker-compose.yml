@@ -2,6 +2,7 @@ version: "3"
 
 services:
     db:
+        container_name: "db"
         image: mysql:8.0.33
         platform: linux/x86_64
         command: --default-authentication-plugin=mysql_native_password
@@ -18,6 +19,7 @@ services:
             - symfony_app
         
     php:
+        container_name: "symfony"
         build:
             context: ./php
             args:
@@ -29,6 +31,7 @@ services:
         networks:
             - symfony_app
     nginx:
+        container_name: "nginx"
         build:
             context: ./nginx
         volumes:
@@ -43,6 +46,7 @@ services:
             - .env.nginx.local
 
     phpmyadmin:
+        container_name: "phpmyadmin"
         image: phpmyadmin/phpmyadmin
         environment:
             PMA_HOST: db

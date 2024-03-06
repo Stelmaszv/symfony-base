@@ -1,5 +1,5 @@
 <h2>Opis</h2>
-Jest bazwowy projekt Symfony postawiony na Dockerze, wykorzystywany jako szkielet aplikacji. Projekt korzysta z Symfony Generic Views.
+Jest bazwowy projekt Symfony postawiony na Dockerze, wykorzystywany jako szkielet aplikacji. Projekt korzysta z Symfony Generic Views https://github.com/Stelmaszv/symfony_generic_views.
 To jest kompletny stos do uruchamiania Symfony 6.2 w kontenerach Docker za pomocą narzędzia docker-compose.
 
 Składa się z 4 kontenerów:

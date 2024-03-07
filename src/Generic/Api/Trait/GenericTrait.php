@@ -63,7 +63,7 @@ trait GenericTrait
 
                 if ($object !== null && property_exists($dto, 'company') && $dto->company !== null) {
                     $objectRepository = $this->managerRegistry->getRepository($object::class);
-                    $entity->setCompany($objectRepository->find($dto->company));
+                    $entity->$method($objectRepository->find($dto->$propertyName));
                 } else {
                     $entity->$method($dto->$propertyName);
                 }

@@ -16,21 +16,23 @@ class GenericCreateController extends AbstractController implements GenricInterf
 {
     use GenericTrait;
 
-    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine): JsonResponse
+    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): JsonResponse
     {
-        $this->initialize($request, $serializer, $validator, $doctrine);
-        return $this->createAction($request, $serializer, $validator, $doctrine);
+        $this->initialize($request, $serializer, $validator, $managerRegistry);
+        $this->checkData();
+
+        return $this->createAction($request, $serializer, $validator, $managerRegistry);
     }
 
-    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine): void
+    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): void
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
-        $this->doctrine = $doctrine;
+        $this->managerRegistry = $managerRegistry;
         $this->request = $request;
     }
 
-    public function createAction(): JsonResponse
+    private function createAction(): JsonResponse
     {
         $data = $this->request->getContent();
 
@@ -40,18 +42,20 @@ class GenericCreateController extends AbstractController implements GenricInterf
 
         $dto = $this->deserializeDto($data);
 
+        $this->beforeValidation();
         $errors = $this->validateDto($dto);
         if (!empty($errors)) {
             return $this->validationErrorResponse($errors);
         }
+        $this->afterValidation();
 
         $this->processEntity($dto);
+        $this->afterProcessEntity();
 
-        return $this->respondWithSuccess('Car added successfully', JsonResponse::HTTP_CREATED);
+        return $this->respondWithSuccess('Object added successfully', JsonResponse::HTTP_CREATED);
     }
 
     public function getEntity() : ApiInterface {
         return new $this->entity();
     }
-
 }

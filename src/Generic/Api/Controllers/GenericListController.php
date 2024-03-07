@@ -14,15 +14,17 @@ class GenericListController extends AbstractController
 {
     protected ?string $entity = null;
     protected int $perPage = 0;
-    protected ManagerRegistry $managerRegistry;
+    protected ObjectRepository $repository;
+    protected Request $request;
+    private ManagerRegistry $managerRegistry;
     private SerializerInterface $serializer;
     private PaginatorInterface $paginator;
-    private Request $request;
     private ?array $paginatorData = null;
 
     public function __invoke(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator, Request $request): JsonResponse
     {
         $this->initialize($doctrine, $serializer, $paginator, $request);
+
         return $this->listAction();
     }
 
@@ -32,11 +34,16 @@ class GenericListController extends AbstractController
         $this->serializer = $serializer;
         $this->paginator = $paginator;
         $this->request = $request;
+        $this->repository = $this->managerRegistry->getRepository($this->entity);
     }
 
-    protected function onQuerySet(ObjectRepository $repository): array
+    protected function beforeQuery() :void {}
+
+    protected function afterQuery() :void {}
+
+    protected function onQuerySet(): array
     {
-        return $repository->findAll();
+        return $this->repository->findAll();
     }
 
     private function listAction(): JsonResponse
@@ -45,7 +52,11 @@ class GenericListController extends AbstractController
             throw new \Exception("Entity is not define in controller ".get_class($this)."!");
         }
 
-        return new JsonResponse($this->getResponse(), JsonResponse::HTTP_OK);
+        $this->beforeQuery();
+        $respane = $this->getResponse();
+        $this->afterQuery();
+
+        return new JsonResponse($respane, JsonResponse::HTTP_OK);
     }
 
     private function getResponse(): array
@@ -68,7 +79,7 @@ class GenericListController extends AbstractController
 
     private function getQuery(): array
     {
-        return $this->onQuerySet($this->managerRegistry->getRepository($this->entity));
+        return $this->onQuerySet();
     }
 
     private function prepareQuerySet(array $query): mixed

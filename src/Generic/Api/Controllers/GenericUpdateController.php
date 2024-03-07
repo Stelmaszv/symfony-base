@@ -17,22 +17,24 @@ class GenericUpdateController extends AbstractController implements GenricInterf
     use GenericTrait;
     protected int $id;
 
-    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id): JsonResponse
+    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): JsonResponse
     {
-        $this->initialize($request, $serializer, $validator, $doctrine, $id);
+        $this->initialize($request, $serializer, $validator, $managerRegistry, $id);
+        $this->checkData();
+
         return $this->update();
     }
 
-    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id): void
+    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): void
     {
         $this->request = $request;
         $this->serializer = $serializer;
         $this->validator = $validator;
-        $this->doctrine = $doctrine;
+        $this->managerRegistry = $managerRegistry;
         $this->id = $id;
     }
 
-    public function update(): JsonResponse
+    private function update(): JsonResponse
     {
         $data = $this->request->getContent();
 
@@ -42,17 +44,20 @@ class GenericUpdateController extends AbstractController implements GenricInterf
 
         $dto = $this->deserializeDto($data);
 
+        $this->beforeValidation();
         $errors = $this->validateDto($dto);
         if (!empty($errors)) {
             return $this->validationErrorResponse($errors);
         }
+        $this->afterValidation();
 
         $this->processEntity($dto);
+        $this->afterProcessEntity();
 
-        return $this->respondWithSuccess('Car updated successfully', JsonResponse::HTTP_CREATED);
+        return $this->respondWithSuccess('Object updated successfully', JsonResponse::HTTP_CREATED);
     }
 
     public function getEntity() : ApiInterface {
-        return new $this->entity();
+        return $this->managerRegistry->getRepository($this->entity)->find($this->id);
     }
 }

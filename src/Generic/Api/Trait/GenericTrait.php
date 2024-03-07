@@ -17,8 +17,14 @@ trait GenericTrait
 
     protected SerializerInterface $serializer;
     protected ValidatorInterface $validator;
-    protected ManagerRegistry $doctrine;
+    protected ManagerRegistry $managerRegistry;
     protected Request $request;
+
+    protected function beforeValidation(): void {}
+
+    protected function afterValidation(): void {}
+
+    protected function afterProcessEntity(): void {}
 
     private function deserializeDto(string $data)
     {
@@ -28,6 +34,16 @@ trait GenericTrait
     private function validateDto(DTO $dto): array
     {
         return iterator_to_array($this->validator->validate($dto));
+    }
+
+    private function checkData(){
+        if(!$this->entity) {
+            throw new \Exception("Entity is not define in controller ".get_class($this)."!");
+        }
+
+        if(!$this->dto) {
+            throw new \Exception("Dto is not define in controller ".get_class($this)."!");
+        }
     }
 
     private function processEntity(DTO $dto): void
@@ -46,7 +62,7 @@ trait GenericTrait
                 $method = 'set' . ucfirst($propertyName);
 
                 if ($object !== null && property_exists($dto, 'company') && $dto->company !== null) {
-                    $objectRepository = $this->doctrine->getRepository($object::class);
+                    $objectRepository = $this->managerRegistry->getRepository($object::class);
                     $entity->setCompany($objectRepository->find($dto->company));
                 } else {
                     $entity->$method($dto->$propertyName);
@@ -54,7 +70,7 @@ trait GenericTrait
             }
         }
 
-        $entityManager = $this->doctrine->getManager();
+        $entityManager = $this->managerRegistry->getManager();
         $entityManager->persist($entity);
         $entityManager->flush();
     }

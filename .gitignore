@@ -9,3 +9,7 @@
 /vendor/
 ###< symfony/framework-bundle ###
 /.docker/.env.nginx.local
+src/Controller/
+src/Repository/
+src/Entity/
+src/Validation/DTO

@@ -72,6 +72,4 @@ abstract class GenericPostController extends AbstractController
     {
         return $this->managerRegistry->getRepository($entity);
     }
-
-    public function action(): void{}
 }

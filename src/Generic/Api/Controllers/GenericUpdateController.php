@@ -15,7 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class GenericUpdateController extends AbstractController implements GenricInterface
 {
     use GenericTrait;
+
     protected int $id;
+    private string $successMessage = 'Object updated successfully';
 
     public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): JsonResponse
     {
@@ -54,7 +56,7 @@ class GenericUpdateController extends AbstractController implements GenricInterf
         $this->processEntity($dto);
         $this->afterProcessEntity();
 
-        return $this->respondWithSuccess('Object updated successfully', JsonResponse::HTTP_CREATED);
+        return $this->respondWithSuccess(JsonResponse::HTTP_OK);
     }
 
     public function getEntity() : ApiInterface {

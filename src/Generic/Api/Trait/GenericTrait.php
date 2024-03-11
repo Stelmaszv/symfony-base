@@ -26,6 +26,10 @@ trait GenericTrait
 
     protected function afterProcessEntity(): void {}
 
+    protected function onSuccessResponseMessage() : array {
+        return [];
+    }
+
     private function deserializeDto(string $data)
     {
         return $this->serializer->deserialize($data, $this->dto, 'json');
@@ -73,6 +77,7 @@ trait GenericTrait
         $entityManager = $this->managerRegistry->getManager();
         $entityManager->persist($entity);
         $entityManager->flush();
+        $this->insertId = $entity->getId(); 
     }
 
     private function getObject(string $type): ?object
@@ -102,8 +107,11 @@ trait GenericTrait
         return new JsonResponse(['errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    private function respondWithSuccess(string $message, int $statusCode): JsonResponse
+    private function respondWithSuccess(int $statusCode, array $data = []): JsonResponse
     {
-        return new JsonResponse(['message' => $message], $statusCode);
+        $responseData = ['success' => true, 'message' => $this->successMessage,'id' => $this->insertId];
+        $responseData = array_merge($responseData,$this->onSuccessResponseMessage());
+
+        return new JsonResponse($responseData, $statusCode);
     }
 }

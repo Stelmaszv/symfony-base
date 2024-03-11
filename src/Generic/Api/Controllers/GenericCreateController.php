@@ -15,6 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class GenericCreateController extends AbstractController implements GenricInterface
 {
     use GenericTrait;
+    
+    private string $successMessage = 'Object added successfully';
 
     public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): JsonResponse
     {
@@ -52,7 +54,7 @@ class GenericCreateController extends AbstractController implements GenricInterf
         $this->processEntity($dto);
         $this->afterProcessEntity();
 
-        return $this->respondWithSuccess('Object added successfully', JsonResponse::HTTP_CREATED);
+        return $this->respondWithSuccess(JsonResponse::HTTP_CREATED);
     }
 
     public function getEntity() : ApiInterface {

@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Generic\Api\Controllers;
 
+use App\Generic\Api\Trait\GenericAction;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-abstract class GenericActionController extends AbstractController
+class GenericActionController extends AbstractController
 {
+    use GenericAction;
     private string $successMessage = 'Action Executed successfully';
     protected ManagerRegistry $managerRegistry;
 
@@ -48,9 +50,5 @@ abstract class GenericActionController extends AbstractController
         return $this->managerRegistry->getRepository($entity);
     }
 
-    protected function beforeAction(): void {}
-
-    abstract protected function action(): void;
-
-    protected function afterAction(): void {}
+    public function action() : void {}
 }

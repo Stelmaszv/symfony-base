@@ -5,8 +5,11 @@ namespace App\Generic\Api\Controllers;
 use App\Generic\Api\Trait\GenericTrait;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Generic\Api\Interfaces\ApiInterface;
+use App\Generic\Api\Trait\GenericValidation;
 use Symfony\Component\HttpFoundation\Request;
 use App\Generic\Api\Interfaces\GenricInterface;
+use App\Generic\Api\Trait\GenericJSONResponse;
+use App\Generic\Api\Trait\GenericProcessEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -14,10 +17,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GenericUpdateController extends AbstractController implements GenricInterface
 {
-    use GenericTrait;
+    use GenericValidation;
+    use GenericProcessEntity;
+    use GenericJSONResponse;
 
     protected int $id;
-    private string $successMessage = 'Object updated successfully';
 
     public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): JsonResponse
     {

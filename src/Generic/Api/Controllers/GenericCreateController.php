@@ -2,28 +2,30 @@
 
 namespace App\Generic\Api\Controllers;
 
-use App\Generic\Api\Trait\GenericTrait;
+use App\Generic\Api\Trait\GenericJSONResponse;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Generic\Api\Interfaces\ApiInterface;
+use App\Generic\Api\Trait\GenericValidation;
 use Symfony\Component\HttpFoundation\Request;
 use App\Generic\Api\Interfaces\GenricInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Generic\Api\Trait\GenericProcessEntity;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class GenericCreateController extends AbstractController implements GenricInterface
 {
-    use GenericTrait;
-    
-    private string $successMessage = 'Object added successfully';
+    use GenericValidation;
+    use GenericProcessEntity;
+    use GenericJSONResponse;
 
     public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): JsonResponse
     {
         $this->initialize($request, $serializer, $validator, $managerRegistry);
         $this->checkData();
 
-        return $this->createAction($request, $serializer, $validator, $managerRegistry);
+        return $this->createAction();
     }
 
     protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): void

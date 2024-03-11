@@ -65,7 +65,7 @@ trait GenericTrait
                 $object = $this->getObject($propertyTypeName);
                 $method = 'set' . ucfirst($propertyName);
 
-                if ($object !== null && property_exists($dto, 'company') && $dto->company !== null) {
+                if ($object !== null && property_exists($dto, $propertyName) && $dto->$propertyName !== null) {
                     $objectRepository = $this->managerRegistry->getRepository($object::class);
                     $entity->$method($objectRepository->find($dto->$propertyName));
                 } else {
@@ -77,7 +77,7 @@ trait GenericTrait
         $entityManager = $this->managerRegistry->getManager();
         $entityManager->persist($entity);
         $entityManager->flush();
-        $this->insertId = $entity->getId(); 
+        $this->insertId = $entity->getId();
     }
 
     private function getObject(string $type): ?object
@@ -107,7 +107,7 @@ trait GenericTrait
         return new JsonResponse(['errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
     }
 
-    private function respondWithSuccess(int $statusCode, array $data = []): JsonResponse
+    private function respondWithSuccess(int $statusCode): JsonResponse
     {
         $responseData = ['success' => true, 'message' => $this->successMessage,'id' => $this->insertId];
         $responseData = array_merge($responseData,$this->onSuccessResponseMessage());

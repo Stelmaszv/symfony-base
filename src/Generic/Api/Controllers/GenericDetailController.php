@@ -69,6 +69,6 @@ class GenericDetailController extends AbstractController
 
     private function getObject(): ?object
     {
-        return $this->onQuerySet($this->managerRegistry->getRepository($this->entity));
+        return $this->onQuerySet();
     }
 }

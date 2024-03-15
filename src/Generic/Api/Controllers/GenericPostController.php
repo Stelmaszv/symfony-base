@@ -15,12 +15,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 
 abstract class GenericPostController extends AbstractController
 {
     use GenericValidation;
     use GenericJSONResponse;
     use GenericAction;
+    use SecurityTrait;
     protected ?string $dto = null;
     protected ManagerRegistry $managerRegistry;
     protected SerializerInterface $serializer;
@@ -32,7 +34,7 @@ abstract class GenericPostController extends AbstractController
     {
         $this->initialize($request, $serializer, $validator, $managerRegistry);
 
-        return $this->post();
+        return $this->view('postAction');
     }
 
     protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): void
@@ -43,7 +45,7 @@ abstract class GenericPostController extends AbstractController
         $this->request = $request;
     }
 
-    private function post(): JsonResponse
+    private function postAction(): JsonResponse
     {
         $this->beforeAction();
 

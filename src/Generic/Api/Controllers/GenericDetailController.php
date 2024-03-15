@@ -7,9 +7,11 @@ use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 
 class GenericDetailController extends AbstractController
 {
+    use SecurityTrait;
     protected ?string $entity = null;
     protected ManagerRegistry $managerRegistry;
     protected ObjectRepository $repository;
@@ -24,7 +26,7 @@ class GenericDetailController extends AbstractController
 
         $this->initialize($managerRegistry, $serializer, $id);
 
-        return $this->getAction();
+        return $this->view('detailAction');
     }
 
     protected function initialize(ManagerRegistry $managerRegistry, SerializerInterface $serializer, int $id): void
@@ -44,7 +46,7 @@ class GenericDetailController extends AbstractController
 
     protected function afterQuery() :void {}
 
-    private function getAction(): JsonResponse
+    private function detail(): JsonResponse
     {
         $this->beforeQuery();
         $car = $this->getObject();

@@ -5,6 +5,7 @@ namespace App\Generic\Api\Controllers;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 
 class GenericDeleteController extends AbstractController
 {
@@ -13,10 +14,13 @@ class GenericDeleteController extends AbstractController
     protected ManagerRegistry $managerRegistry;
     protected int $id = 0;
 
+    use SecurityTrait;
+
     public function __invoke(ManagerRegistry $doctrine, int $id): JsonResponse
     {
         $this->initialize($doctrine,$id);
-        return $this->deleteAction($doctrine,$id);
+
+        return $this->view('deleteAction');
     }
 
     public function deleteAction(ManagerRegistry $doctrine, int $id): JsonResponse

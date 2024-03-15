@@ -10,11 +10,13 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 
 class GenericActionController extends AbstractController
 {
     use GenericAction;
     use GenericJSONResponse;
+    use SecurityTrait;
     private string $successMessage = 'Action Executed successfully';
     protected ManagerRegistry $managerRegistry;
 
@@ -22,10 +24,10 @@ class GenericActionController extends AbstractController
     {
         $this->managerRegistry = $managerRegistry;
 
-        return $this->update();
+        return $this->view('executeAction');
     }
 
-    private function update(): JsonResponse
+    private function executeAction(): JsonResponse
     {
         $this->beforeAction();
         $this->action();

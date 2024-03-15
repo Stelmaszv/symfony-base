@@ -14,12 +14,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 
 class GenericUpdateController extends AbstractController implements GenricInterface
 {
     use GenericValidation;
     use GenericProcessEntity;
     use GenericJSONResponse;
+    use SecurityTrait;
 
     protected int $id;
 
@@ -28,7 +30,7 @@ class GenericUpdateController extends AbstractController implements GenricInterf
         $this->initialize($request, $serializer, $validator, $managerRegistry, $id);
         $this->checkData();
 
-        return $this->update();
+        return $this->view('updateAction');
     }
 
     protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): void
@@ -40,7 +42,7 @@ class GenericUpdateController extends AbstractController implements GenricInterf
         $this->id = $id;
     }
 
-    private function update(): JsonResponse
+    private function updateAction(): JsonResponse
     {
         $data = $this->request->getContent();
 

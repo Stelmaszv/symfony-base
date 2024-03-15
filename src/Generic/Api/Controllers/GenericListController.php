@@ -2,18 +2,19 @@
 
 namespace App\Generic\Api\Controllers;
 
-use App\Security\Voter\BaseUserVoter;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 
 class GenericListController extends AbstractController
 {
+    use SecurityTrait;
     protected ?string $entity = null;
     protected int $perPage = 0;
     protected ObjectRepository $repository;
@@ -21,23 +22,29 @@ class GenericListController extends AbstractController
     private ManagerRegistry $managerRegistry;
     private SerializerInterface $serializer;
     private PaginatorInterface $paginator;
+
     private ?array $paginatorData = null;
 
-    public function __invoke(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator, Request $request,BaseUserVoter $voter,TokenStorageInterface $tokenStorage): JsonResponse
-    {
-        $this->initialize($doctrine, $serializer, $paginator, $request);
-        $this->voter = $voter;
-        $this->tokenStorage = $tokenStorage;
+    private Security $security;
 
-        return $this->listAction();
+    public function __construct(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security)
+    {
+        $this->initialize($doctrine, $serializer, $paginator,$security);
     }
 
-    protected function initialize(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator, Request $request): void
+    public function __invoke(Request $request): JsonResponse
+    {
+        $this->request = $request;
+
+        return $this->view('listAction');
+    }
+
+    protected function initialize(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security): void
     {
         $this->managerRegistry = $doctrine;
         $this->serializer = $serializer;
         $this->paginator = $paginator;
-        $this->request = $request;
+        $this->security = $security;
         $this->repository = $this->managerRegistry->getRepository($this->entity);
     }
 

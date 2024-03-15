@@ -13,3 +13,4 @@ src/Controller/
 src/Repository/
 src/Entity/
 src/Validation/DTO
+/migrations/

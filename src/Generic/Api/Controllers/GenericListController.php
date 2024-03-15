@@ -2,6 +2,7 @@
 
 namespace App\Generic\Api\Controllers;
 
+use App\Security\Voter\BaseUserVoter;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -9,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericListController extends AbstractController
 {
@@ -21,9 +23,11 @@ class GenericListController extends AbstractController
     private PaginatorInterface $paginator;
     private ?array $paginatorData = null;
 
-    public function __invoke(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator, Request $request): JsonResponse
+    public function __invoke(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator, Request $request,BaseUserVoter $voter,TokenStorageInterface $tokenStorage): JsonResponse
     {
         $this->initialize($doctrine, $serializer, $paginator, $request);
+        $this->voter = $voter;
+        $this->tokenStorage = $tokenStorage;
 
         return $this->listAction();
     }

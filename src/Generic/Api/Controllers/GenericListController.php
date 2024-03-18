@@ -2,15 +2,16 @@
 
 namespace App\Generic\Api\Controllers;
 
+use ReflectionClass;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Generic\Api\Trait\Security as SecurityTrait;
 
 class GenericListController extends AbstractController
 {
@@ -24,6 +25,8 @@ class GenericListController extends AbstractController
     private PaginatorInterface $paginator;
 
     private ?array $paginatorData = null;
+
+    protected array $columns = [];
 
     private Security $security;
 
@@ -80,12 +83,7 @@ class GenericListController extends AbstractController
 
     private function normalize(array $query): array
     {
-        return $this->serializer->normalize($this->prepareQuerySet($query), null, [
-            'groups' => 'api',
-            'circular_reference_handler' => function () {
-                return null;
-            },
-        ]);
+        return $this->serializer->normalize($this->prepareQuerySet($query), null, []);
     }
 
     private function getQuery(): array
@@ -95,9 +93,11 @@ class GenericListController extends AbstractController
 
     private function prepareQuerySet(array $query): mixed
     {
+        $data = $this->setData($query);
+
         if($this->perPage){
             $paginator = $this->paginator->paginate(
-                $query,
+                $data,
                 $this->request->query->getInt('page', 1),
                 $this->perPage
             );
@@ -119,4 +119,28 @@ class GenericListController extends AbstractController
 
         return $query;
     }
+
+    private function setData(array $query){
+
+        $reflection = new ReflectionClass($this->entity);
+
+        $results = [];
+
+        foreach ($query as $currency) {
+            $entity = [];
+
+            foreach($reflection->getProperties() as $property){
+                if(count($this->columns) == 0 || (in_array($property->getName() ,$this->columns) && in_array($property->getName() ,$this->columns)) ){
+                    $method = 'get' . ucfirst($property->getName());
+                    $entity[$property->getName()] = $currency->$method();
+                }
+            }
+
+            $results[] = $entity;
+
+        }
+
+        return $results;
+    }
+
 }

@@ -2,13 +2,15 @@
 namespace App\Generic\Auth;
 
 use App\Entity\User;
+use Symfony\Component\Uid\Uuid;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Generic\Api\Identifikators\IdetikatorUid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils; // Importuj encję użytkownika, jeśli jest potrzebna
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthenticationController  extends AbstractController
@@ -41,21 +43,28 @@ class AuthenticationController  extends AbstractController
      */
     public function register(ManagerRegistry $managerRegistry,Request $request, UserPasswordHasherInterface $userPasswordHasher): Response
     {
-        $admin = new User();
-        $form = $this->createForm(RegisterType::class, $admin);
+        $authenticationEntity = new User();
+        $idetikatorUid = $authenticationEntity instanceof IdetikatorUid;
+
+        $form = $this->createForm(RegisterType::class, $authenticationEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             $hashedPassword = $userPasswordHasher->hashPassword(
-                $admin,
+                $authenticationEntity,
                 $form->get('password')->getData()
             );
-            $admin->setPassword($hashedPassword);
-            $admin->setRoles(["ROLE_USER"]);
+
+            if($idetikatorUid){
+                $authenticationEntity->setId(Uuid::v4());
+            }
+
+            $authenticationEntity->setPassword($hashedPassword);
+            $authenticationEntity->setRoles(["SHOW"]);
 
             $entityManager = $managerRegistry->getManager();
-            $entityManager->persist($admin);
+            $entityManager->persist($authenticationEntity);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_login');

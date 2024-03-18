@@ -6,11 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait AuthenticationEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
@@ -22,11 +17,6 @@ trait AuthenticationEntity
      */
     #[ORM\Column]
     private ?string $password = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getEmail(): ?string
     {

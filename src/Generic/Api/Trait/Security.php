@@ -27,6 +27,6 @@ trait Security
             }
         }
 
-        return new JsonResponse(['Access Denied'], JsonResponse::HTTP_UNAUTHORIZED);
+        return new JsonResponse(['success' => false,"message" => 'Access Denied'], JsonResponse::HTTP_UNAUTHORIZED);
     }
 }

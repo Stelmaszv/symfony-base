@@ -6,8 +6,8 @@ use ReflectionClass;
 use App\Generic\Api\Interfaces\DTO;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Generic\Api\Identifikators\Interfaces\IdetikatorUid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 trait GenericProcessEntity
@@ -37,23 +37,27 @@ trait GenericProcessEntity
         $entity = $this->getEntity();
         $reflectionClass = new ReflectionClass($entity);
         $properties = $reflectionClass->getProperties();
+        $idetikatorUid = $entity instanceof IdetikatorUid;
 
         foreach ($properties as $property) {
             $propertyName = $property->getName();
             $propertyType = $property->getType();
 
-            if ($propertyName !== 'id') {
-                $propertyTypeName = $propertyType->__toString();
-                $object = $this->getObject($propertyTypeName);
-                $method = 'set' . ucfirst($propertyName);
-
-                if ($object !== null && property_exists($dto, $propertyName) && $dto->$propertyName !== null) {
-                    $objectRepository = $this->managerRegistry->getRepository($object::class);
-                    $entity->$method($objectRepository->find($dto->$propertyName));
-                } else {
-                    $entity->$method($dto->$propertyName);
-                }
+            if($idetikatorUid){
+                $entity->setId($dto->id);
             }
+            
+            $propertyTypeName = $propertyType->__toString();
+            $object = $this->getObject($propertyTypeName);
+            $method = 'set' . ucfirst($propertyName);
+
+            if ($object !== null && property_exists($dto, $propertyName) && $dto->$propertyName !== null) {
+                $objectRepository = $this->managerRegistry->getRepository($object::class);
+                $entity->$method($objectRepository->find($dto->$propertyName));
+            } else {
+                $entity->$method($dto->$propertyName);
+            }
+
         }
 
         $entityManager = $this->managerRegistry->getManager();

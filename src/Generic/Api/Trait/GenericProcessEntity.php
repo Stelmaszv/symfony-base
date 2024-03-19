@@ -17,7 +17,6 @@ trait GenericProcessEntity
 {
     protected ?string $entity = null;
     protected ?string $dto = null;
-
     protected SerializerInterface $serializer;
     protected ValidatorInterface $validator;
     protected ManagerRegistry $managerRegistry;
@@ -25,7 +24,8 @@ trait GenericProcessEntity
 
     protected function afterProcessEntity(): void {}
 
-    private function checkData(){
+    private function checkData() : never
+    {
         if(!$this->entity) {
             throw new \Exception("Entity is not define in controller ".get_class($this)."!");
         }
@@ -42,7 +42,7 @@ trait GenericProcessEntity
         $properties = $reflectionClass->getProperties();
   
         foreach ($properties as $property) {
-            
+
             $propertyName = $property->getName();
             $propertyType = $property->getType();
             

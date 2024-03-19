@@ -1,6 +1,4 @@
 <?php
-
-
 namespace App\Generic\Api\Trait;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -9,8 +7,8 @@ trait Security
 {
     protected ?string $voterAtribute = null;
     protected ?string $voterSubject = null;
-
-    private function view(string $action): JsonResponse
+    
+    private function setSecurityView(string $action): JsonResponse
     {
         $subject = ($this->voterSubject !== null) ? new $this->voterSubject() : null;
 

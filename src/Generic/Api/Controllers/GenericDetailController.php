@@ -15,14 +15,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class GenericDetailController extends AbstractController
 {
     use SecurityTrait;
+    
     protected ?string $entity = null;
     protected ManagerRegistry $managerRegistry;
     protected ObjectRepository $repository;
     private SerializerInterface $serializer;
     private null|int|string $id = 0;
-
     private Security $security;
-
     protected array $columns = [];
 
     public function __invoke(ManagerRegistry $managerRegistry, SerializerInterface $serializer,Security $security, null|int|string $id): JsonResponse
@@ -33,7 +32,7 @@ class GenericDetailController extends AbstractController
 
         $this->initialize($managerRegistry, $serializer,$security, $id);
 
-        return $this->view('detailAction');
+        return $this->setSecurityView('detailAction');
     }
 
     protected function initialize(ManagerRegistry $managerRegistry, SerializerInterface $serializer,Security $security, null|int|string $id): void

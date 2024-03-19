@@ -25,7 +25,7 @@ class GenericDeleteController extends AbstractController
     {
         $this->initialize($doctrine,$security,$id);
 
-        return $this->view('deleteAction');
+        return $this->setSecurityView('deleteAction');
     }
 
     public function deleteAction(): JsonResponse

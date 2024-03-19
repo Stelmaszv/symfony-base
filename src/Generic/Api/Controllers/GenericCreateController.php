@@ -31,7 +31,7 @@ class GenericCreateController extends AbstractController implements GenricInterf
         $this->initialize($request, $serializer, $validator, $managerRegistry,$security);
         $this->checkData();
 
-        return $this->view('createAction');
+        return $this->setSecurityView('createAction');
     }
 
     protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security): void

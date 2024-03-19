@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class GenericListController extends AbstractController
 {
     use SecurityTrait;
+
     protected ?string $entity = null;
     protected int $perPage = 0;
     protected ObjectRepository $repository;
@@ -23,11 +24,8 @@ class GenericListController extends AbstractController
     private ManagerRegistry $managerRegistry;
     private SerializerInterface $serializer;
     private PaginatorInterface $paginator;
-
     private ?array $paginatorData = null;
-
     protected array $columns = [];
-
     private Security $security;
 
     public function __construct(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security)
@@ -39,7 +37,7 @@ class GenericListController extends AbstractController
     {
         $this->request = $request;
 
-        return $this->view('listAction');
+        return $this->setSecurityView('listAction');
     }
 
     protected function initialize(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security): void

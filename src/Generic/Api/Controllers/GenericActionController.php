@@ -18,8 +18,8 @@ class GenericActionController extends AbstractController
     use GenericAction;
     use GenericJSONResponse;
     use SecurityTrait;
+    
     protected ManagerRegistry $managerRegistry;
-
     private Security $security;
 
     public function __invoke(ManagerRegistry $managerRegistry,Security $security): JsonResponse
@@ -27,7 +27,7 @@ class GenericActionController extends AbstractController
         $this->managerRegistry = $managerRegistry;
         $this->security = $security;
 
-        return $this->view('executeAction');
+        return $this->setSecurityView('executeAction');
     }
 
     private function executeAction(): JsonResponse

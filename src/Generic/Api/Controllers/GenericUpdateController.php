@@ -25,7 +25,6 @@ class GenericUpdateController extends AbstractController implements GenricInterf
     use SecurityTrait;
 
     protected null|int|string $id;
-
     private Security $security;
 
     public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security, null|int|string $id): JsonResponse
@@ -33,7 +32,7 @@ class GenericUpdateController extends AbstractController implements GenricInterf
         $this->initialize($request, $serializer, $validator, $managerRegistry,$security,$id);
         $this->checkData();
 
-        return $this->view('updateAction');
+        return $this->setSecurityView('updateAction');
     }
 
     protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security, null|int|string $id): void
@@ -55,14 +54,14 @@ class GenericUpdateController extends AbstractController implements GenricInterf
         }
 
         $dto = $this->deserializeDto($data);
-
         $this->beforeValidation();
         $errors = $this->validateDto($dto);
+        
         if (!empty($errors)) {
             return $this->validationErrorResponse($errors);
         }
-        $this->afterValidation();
 
+        $this->afterValidation();
         $this->processEntity($dto);
         $this->afterProcessEntity();
 

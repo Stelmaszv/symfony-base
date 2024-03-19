@@ -120,7 +120,8 @@ class GenericListController extends AbstractController
         return $query;
     }
 
-    private function setData(array $query){
+    private function setData(array $query) : array
+    {
 
         $reflection = new ReflectionClass($this->entity);
 

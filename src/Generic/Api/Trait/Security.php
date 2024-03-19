@@ -12,15 +12,13 @@ trait Security
 
     private function view(string $action): JsonResponse
     {
-        $subject = ($this->voterAtribute !== null) ? new $this->voterSubject() : null;
+        $subject = ($this->voterSubject !== null) ? new $this->voterSubject() : null;
 
-        if(
-            (null === $this->voterAtribute && $subject === null) || 
-            (null !== $this->voterAtribute && $subject === null)){
+        if(null === $this->voterAtribute && $subject === null){
             return $this->$action();
         }
         
-        if(null !== $this->voterAtribute && $subject !== null){
+        if((null !== $this->voterAtribute && $subject !== null) || (null !== $this->voterAtribute && $subject === null)){
             $vote = $this->security->isGranted($this->voterAtribute, $subject);
             if ($vote) {
                 return $this->$action();

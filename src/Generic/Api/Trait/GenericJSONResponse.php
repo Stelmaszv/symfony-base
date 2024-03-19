@@ -5,7 +5,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 trait GenericJSONResponse
 {
-    private mixed $insertId = null;
+    private null|int|string $insertId = null;
     protected function onSuccessResponseMessage() : array {
         return [];
     }

@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Component\Security\Core\Security;
 
 class GenericUpdateController extends AbstractController implements GenricInterface
 {
@@ -23,19 +24,22 @@ class GenericUpdateController extends AbstractController implements GenricInterf
     use GenericJSONResponse;
     use SecurityTrait;
 
-    protected int $id;
+    protected null|int|string $id;
 
-    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): JsonResponse
+    private Security $security;
+
+    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security, null|int|string $id): JsonResponse
     {
-        $this->initialize($request, $serializer, $validator, $managerRegistry, $id);
+        $this->initialize($request, $serializer, $validator, $managerRegistry,$security,$id);
         $this->checkData();
 
         return $this->view('updateAction');
     }
 
-    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, int $id): void
+    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security, null|int|string $id): void
     {
         $this->request = $request;
+        $this->security = $security;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->managerRegistry = $managerRegistry;

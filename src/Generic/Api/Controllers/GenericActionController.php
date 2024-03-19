@@ -11,18 +11,21 @@ use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Component\Security\Core\Security;
 
 class GenericActionController extends AbstractController
 {
     use GenericAction;
     use GenericJSONResponse;
     use SecurityTrait;
-    private string $successMessage = 'Action Executed successfully';
     protected ManagerRegistry $managerRegistry;
 
-    public function __invoke(ManagerRegistry $managerRegistry): JsonResponse
+    private Security $security;
+
+    public function __invoke(ManagerRegistry $managerRegistry,Security $security): JsonResponse
     {
         $this->managerRegistry = $managerRegistry;
+        $this->security = $security;
 
         return $this->view('executeAction');
     }

@@ -2,46 +2,52 @@
 
 namespace App\Generic\Api\Controllers;
 
+use App\Generic\Api\Trait\GenericJSONResponse;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Component\Security\Core\Security;
 
 class GenericDeleteController extends AbstractController
 {
+    use SecurityTrait;
+    use GenericJSONResponse;
+
     protected ?string $entity = null;
 
+    private Security $security;
+
     protected ManagerRegistry $managerRegistry;
-    protected int $id = 0;
+    protected null|int|string $id = 0;
 
-    use SecurityTrait;
-
-    public function __invoke(ManagerRegistry $doctrine, int $id): JsonResponse
+    public function __invoke(ManagerRegistry $doctrine,Security $security, null|int|string $id): JsonResponse
     {
-        $this->initialize($doctrine,$id);
+        $this->initialize($doctrine,$security,$id);
 
         return $this->view('deleteAction');
     }
 
-    public function deleteAction(ManagerRegistry $doctrine, int $id): JsonResponse
+    public function deleteAction(): JsonResponse
     {
 
-        $car = $doctrine->getRepository($this->entity)->find($id);
+        $car = $this->managerRegistry->getRepository($this->entity)->find($this->id);
     
         if (!$car) {
-            return new JsonResponse(['message' => 'Car not found'], JsonResponse::HTTP_NOT_FOUND);
+            return $this->respondWithError('Object not found',JsonResponse::HTTP_NOT_FOUND);
         }
     
         $this->beforeDelete();
         $this->delete($car);
         $this->afterDelete();
-    
-        return new JsonResponse(['message' => 'Car deleted successfully'], JsonResponse::HTTP_OK);
+
+        return $this->respondWithSuccess(JsonResponse::HTTP_OK);
     }
 
-    protected function initialize(ManagerRegistry $doctrine, int $id): void
+    protected function initialize(ManagerRegistry $doctrine,Security $security, null|int|string $id): void
     {
         $this->managerRegistry = $doctrine;
+        $this->security = $security;
         $this->id = $id;
     }
 

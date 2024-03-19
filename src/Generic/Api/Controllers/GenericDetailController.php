@@ -2,12 +2,15 @@
 
 namespace App\Generic\Api\Controllers;
 
+use ReflectionClass;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
+use App\Generic\Api\Interfaces\ApiInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GenericDetailController extends AbstractController
 {
@@ -16,23 +19,28 @@ class GenericDetailController extends AbstractController
     protected ManagerRegistry $managerRegistry;
     protected ObjectRepository $repository;
     private SerializerInterface $serializer;
-    private int $id = 0;
+    private null|int|string $id = 0;
 
-    public function __invoke(ManagerRegistry $managerRegistry, SerializerInterface $serializer, int $id): JsonResponse
+    private Security $security;
+
+    protected array $columns = [];
+
+    public function __invoke(ManagerRegistry $managerRegistry, SerializerInterface $serializer,Security $security, null|int|string $id): JsonResponse
     {
         if(!$this->entity) {
             throw new \Exception("Entity is not define in controller ".get_class($this)."!");
         }
 
-        $this->initialize($managerRegistry, $serializer, $id);
+        $this->initialize($managerRegistry, $serializer,$security, $id);
 
         return $this->view('detailAction');
     }
 
-    protected function initialize(ManagerRegistry $managerRegistry, SerializerInterface $serializer, int $id): void
+    protected function initialize(ManagerRegistry $managerRegistry, SerializerInterface $serializer,Security $security, null|int|string $id): void
     {
         $this->managerRegistry = $managerRegistry;
         $this->serializer = $serializer;
+        $this->security = $security;
         $this->id = $id;
         $this->repository = $this->managerRegistry->getRepository($this->entity);
     }
@@ -46,7 +54,7 @@ class GenericDetailController extends AbstractController
 
     protected function afterQuery() :void {}
 
-    private function detail(): JsonResponse
+    private function detailAction(): JsonResponse
     {
         $this->beforeQuery();
         $car = $this->getObject();
@@ -59,18 +67,30 @@ class GenericDetailController extends AbstractController
         return new JsonResponse($this->normalize($car), JsonResponse::HTTP_OK);
     }
 
-    private function normalize(object $object): array
+    private function normalize(ApiInterface $object): array
     {
-        return $this->serializer->normalize($object, null, [
-            'groups' => 'api',
-            'circular_reference_handler' => function () {
-                return null;
-            },
-        ]);
+        return $this->serializer->normalize($this->setData($object), null, []);
     }
 
     private function getObject(): ?object
     {
         return $this->onQuerySet();
+    }
+
+    private function setData(ApiInterface $entity) : array
+    {
+
+        $reflection = new ReflectionClass($entity);
+
+        $result = [];
+
+            foreach($reflection->getProperties() as $property){
+                if(count($this->columns) == 0 || (in_array($property->getName() ,$this->columns) && in_array($property->getName() ,$this->columns)) ){
+                    $method = 'get' . ucfirst($property->getName());
+                    $result[$property->getName()] = $entity->$method();
+                }
+            }
+
+        return $result;
     }
 }

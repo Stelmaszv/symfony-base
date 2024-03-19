@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Component\Security\Core\Security;
 
 class GenericCreateController extends AbstractController implements GenricInterface
 {
@@ -22,18 +23,21 @@ class GenericCreateController extends AbstractController implements GenricInterf
     use GenericJSONResponse;
     use SecurityTrait;
 
-    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): JsonResponse
+    private Security $security;
+
+    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security): JsonResponse
     {
-        $this->initialize($request, $serializer, $validator, $managerRegistry);
+        $this->initialize($request, $serializer, $validator, $managerRegistry,$security);
         $this->checkData();
 
         return $this->view('createAction');
     }
 
-    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry): void
+    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security): void
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->security = $security;
         $this->managerRegistry = $managerRegistry;
         $this->request = $request;
     }

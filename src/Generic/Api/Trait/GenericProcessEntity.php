@@ -3,10 +3,13 @@
 namespace App\Generic\Api\Trait;
 
 use ReflectionClass;
+use Symfony\Component\Uid\Uuid;
 use App\Generic\Api\Interfaces\DTO;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Generic\Api\Interfaces\ProcessEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Generic\Api\Controllers\GenericCreateController;
 use App\Generic\Api\Identifikators\Interfaces\IdetikatorUid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -37,15 +40,11 @@ trait GenericProcessEntity
         $entity = $this->getEntity();
         $reflectionClass = new ReflectionClass($entity);
         $properties = $reflectionClass->getProperties();
-        $idetikatorUid = $entity instanceof IdetikatorUid;
-
+  
         foreach ($properties as $property) {
+            
             $propertyName = $property->getName();
             $propertyType = $property->getType();
-
-            if($idetikatorUid){
-                $entity->setId($dto->id);
-            }
             
             $propertyTypeName = $propertyType->__toString();
             $object = $this->getObject($propertyTypeName);
@@ -60,9 +59,14 @@ trait GenericProcessEntity
 
         }
 
+        if($entity instanceof IdetikatorUid && $this instanceof ProcessEntity){
+            $entity->setId(Uuid::v4());
+        }
+
         $entityManager = $this->managerRegistry->getManager();
         $entityManager->persist($entity);
         $entityManager->flush();
+
         $this->insertId = $entity->getId();
     }
 

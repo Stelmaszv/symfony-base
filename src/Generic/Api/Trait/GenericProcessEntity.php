@@ -24,7 +24,7 @@ trait GenericProcessEntity
 
     protected function afterProcessEntity(): void {}
 
-    private function checkData() : never
+    private function checkData()
     {
         if(!$this->entity) {
             throw new \Exception("Entity is not define in controller ".get_class($this)."!");

@@ -3,33 +3,33 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Generic\Fixture\FixtureGeneric;
 
-class UserFixtures extends Fixture
+class UserFixtures extends FixtureGeneric
 {
-    private $passwordEncoder;
+    protected ?string $enetity = User::class;
+    protected array $data = [
+        [
+          'email' => 'user@qwe.com',
+          'roles' => ['ROLE_SUPER_ADMIN'],
+          'password' => '123'
+        ],
+        [
+            'email' => 'kot123@dot.com',
+            'roles' => ['ROLE_UESER'],
+            'password' => 'qwe'
+        ],
+        [
+            'email' => 'pani@wp.pl',
+            'roles' => ['ROLE_UESER'],
+            'password' => 'vbn'
+        ]
+    ];
 
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
-    {
-        $this->passwordEncoder = $userPasswordHasher;
-    }
-
-    public function load(ObjectManager $manager): void
-    {
-        $user = new User();
-        $hashedPassword = $this->passwordEncoder->hashPassword(
-            $user,
-            123
+    public function onPasswordSet(mixed $value,object $entity){
+        return $this->passwordEncoder->hashPassword(
+            $entity,
+            $value
         );
-        $user->setRoles([]);
-        $user->setId(Uuid::v4());
-        $user->setEmail('user@qwe.com');
-        $user->setPassword($hashedPassword);
-
-        $manager->persist($user);
-        $manager->flush();
     }
 }

@@ -6,7 +6,7 @@ namespace App\Generic\Api\Identifikators\Trait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 
-trait IdetikatorByUid
+trait IdentifierByUid
 {
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME)]

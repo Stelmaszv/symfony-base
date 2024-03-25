@@ -5,7 +5,7 @@ namespace App\Generic\Api\Identifikators\Trait;
 
 use Doctrine\ORM\Mapping as ORM;
 
-trait IdentifikatorById
+trait IdentifierById
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

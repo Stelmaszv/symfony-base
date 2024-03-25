@@ -1,14 +1,16 @@
 <?php
 namespace App\Generic\Api\Trait;
 
+use App\Security\Roles;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 trait Security
 {
     protected ?string $voterAtribute = null;
     protected ?string $voterSubject = null;
     
-    private function setSecurityView(string $action): JsonResponse
+    private function setSecurityView(string $action,TokenStorageInterface $token): JsonResponse
     {
         $subject = ($this->voterSubject !== null) ? new $this->voterSubject() : null;
 
@@ -17,10 +19,16 @@ trait Security
         }
         
         if((null !== $this->voterAtribute && $subject !== null) || (null !== $this->voterAtribute && $subject === null)){
-            $vote = $this->security->isGranted($this->voterAtribute, $subject);
-            if ($vote) {
-                return $this->$action();
+
+            foreach($token->getToken()->getUser()->getRoles() as $role){
+                if(Roles::checkAtribute($role,$this->voterAtribute)){
+                    $vote = $this->security->isGranted($this->voterAtribute, $subject);
+                    if($subject !== null && $vote){
+                        return $this->$action();
+                    }
+                }
             }
+
         }
 
         return new JsonResponse(['success' => false,"message" => 'Access Denied'], JsonResponse::HTTP_UNAUTHORIZED);

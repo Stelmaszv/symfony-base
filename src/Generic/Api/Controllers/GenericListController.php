@@ -12,11 +12,11 @@ use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericListController extends AbstractController
 {
     use SecurityTrait;
-
     protected ?string $entity = null;
     protected int $perPage = 0;
     protected ObjectRepository $repository;
@@ -33,11 +33,11 @@ class GenericListController extends AbstractController
         $this->initialize($doctrine, $serializer, $paginator,$security);
     }
 
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(Request $request,TokenStorageInterface $token): JsonResponse
     {
         $this->request = $request;
 
-        return $this->setSecurityView('listAction');
+        return $this->setSecurityView('listAction',$token);
     }
 
     protected function initialize(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security): void

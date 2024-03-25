@@ -2,13 +2,14 @@
 
 namespace App\Security\Voter;
 
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use App\Security\Atribute;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class CarsVoter extends Voter
 {
-    public const VIEW = 'SHOW';
+    public const VIEW = Atribute::SHOW_CAR;
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -29,7 +30,7 @@ class CarsVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::VIEW:
-                    return in_array(self::VIEW, $token->getRoleNames());
+                    return true;
                 break;
         }
 

@@ -20,17 +20,29 @@ trait Security
         
         if((null !== $this->voterAtribute && $subject !== null) || (null !== $this->voterAtribute && $subject === null)){
 
-            foreach($token->getToken()->getUser()->getRoles() as $role){
+            $userToken = $token->getToken()?->getUser();
+
+            if($userToken === null){
+                return $this->response();
+            }
+
+            foreach($userToken->getRoles() as $role){
                 if(Roles::checkAtribute($role,$this->voterAtribute)){
                     $vote = $this->security->isGranted($this->voterAtribute, $subject);
                     if($subject !== null && $vote){
                         return $this->$action();
                     }
+
+                    return $this->$action();
                 }
             }
-
         }
 
+        return $this->response();
+    }
+
+    private function response() :JsonResponse
+    {
         return new JsonResponse(['success' => false,"message" => 'Access Denied'], JsonResponse::HTTP_UNAUTHORIZED);
     }
 }

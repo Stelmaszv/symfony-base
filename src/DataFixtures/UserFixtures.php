@@ -3,6 +3,8 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Roles\RoleUser;
+use App\Roles\RoleSuperAdmin;
 use App\Generic\Fixture\FixtureGeneric;
 
 class UserFixtures extends FixtureGeneric
@@ -11,17 +13,17 @@ class UserFixtures extends FixtureGeneric
     protected array $data = [
         [
           'email' => 'user@qwe.com',
-          'roles' => ['ROLE_SUPER_ADMIN'],
+          'roles' => [RoleSuperAdmin::NAME],
           'password' => '123'
         ],
         [
             'email' => 'kot123@dot.com',
-            'roles' => ['ROLE_UESER'],
+            'roles' => [RoleUser::NAME],
             'password' => 'qwe'
         ],
         [
             'email' => 'pani@wp.pl',
-            'roles' => ['ROLE_UESER'],
+            'roles' => [RoleUser::NAME],
             'password' => 'vbn'
         ]
     ];

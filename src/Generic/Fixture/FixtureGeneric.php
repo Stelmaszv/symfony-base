@@ -29,7 +29,7 @@ abstract class FixtureGeneric  extends Fixture
             $idetikatorUid = $enetityObj instanceof IdentifierUid;
 
             if($idetikatorUid){
-                $enetityObj->setId(Uuid::v4());
+                $enetityObj?->setId(Uuid::v4());
             }
             
             foreach($elelemnts as $field => $value){
@@ -41,11 +41,12 @@ abstract class FixtureGeneric  extends Fixture
                         $value = $this->$onMethodSet($value, $enetityObj);
                     }
 
-                    $enetityObj->$setMethod($value);
+                    $enetityObj?->$setMethod($value);
             }
-
+            
             $manager->persist($enetityObj);
             $manager->flush();
+            
         }
  
     }

@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 abstract class GenericPostController extends AbstractController
 {
@@ -32,14 +33,27 @@ abstract class GenericPostController extends AbstractController
     protected Request $request;
     private Security $security;
 
-    public function __invoke(Request $request,SerializerInterface $serializer, ValidatorInterface $validator,ManagerRegistry $managerRegistry, Security $security): JsonResponse
+    public function __invoke(
+            Request $request,
+            SerializerInterface $serializer, 
+            ValidatorInterface $validator,
+            ManagerRegistry $managerRegistry, 
+            Security $security,
+            TokenStorageInterface $token
+        ): JsonResponse
     {
         $this->initialize($request, $serializer, $validator, $managerRegistry,$security);
 
-        return $this->setSecurityView('postAction');
+        return $this->setSecurityView('postAction',$token);
     }
 
-    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry, Security $security): void
+    protected function initialize(
+            Request $request, 
+            SerializerInterface $serializer, 
+            ValidatorInterface $validator, 
+            ManagerRegistry $managerRegistry, 
+            Security $security
+        ): void
     {
         $this->serializer = $serializer;
         $this->validator = $validator;

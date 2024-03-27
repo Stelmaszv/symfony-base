@@ -11,6 +11,7 @@ use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericDetailController extends AbstractController
 {
@@ -24,7 +25,13 @@ class GenericDetailController extends AbstractController
     private Security $security;
     protected array $columns = [];
 
-    public function __invoke(ManagerRegistry $managerRegistry, SerializerInterface $serializer,Security $security, null|int|string $id): JsonResponse
+    public function __invoke(
+            ManagerRegistry $managerRegistry, 
+            SerializerInterface $serializer,
+            Security $security, 
+            null|int|string $id,
+            TokenStorageInterface $token
+        ): JsonResponse
     {
         if(!$this->entity) {
             throw new \Exception("Entity is not define in controller ".get_class($this)."!");
@@ -32,10 +39,15 @@ class GenericDetailController extends AbstractController
 
         $this->initialize($managerRegistry, $serializer,$security, $id);
 
-        return $this->setSecurityView('detailAction');
+        return $this->setSecurityView('detailAction',$token);
     }
 
-    protected function initialize(ManagerRegistry $managerRegistry, SerializerInterface $serializer,Security $security, null|int|string $id): void
+    protected function initialize(
+            ManagerRegistry $managerRegistry, 
+            SerializerInterface $serializer,
+            Security $security, 
+            null|int|string $id
+        ): void
     {
         $this->managerRegistry = $managerRegistry;
         $this->serializer = $serializer;

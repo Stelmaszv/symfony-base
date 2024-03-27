@@ -5,9 +5,9 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use App\Roles\RoleUser;
 use App\Roles\RoleSuperAdmin;
-use App\Generic\Fixture\FixtureGeneric;
+use App\Generic\Components\AbstractFixtureGeneric;
 
-class UserFixtures extends FixtureGeneric
+class UserFixtures extends AbstractFixtureGeneric
 {
     protected ?string $enetity = User::class;
     protected array $data = [

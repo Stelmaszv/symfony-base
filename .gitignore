@@ -19,3 +19,4 @@ src/Security/Voter
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+src/DataFixtures

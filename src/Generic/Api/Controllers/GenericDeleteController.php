@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericDeleteController extends AbstractController
 {
@@ -21,11 +22,16 @@ class GenericDeleteController extends AbstractController
     protected ManagerRegistry $managerRegistry;
     protected null|int|string $id = 0;
 
-    public function __invoke(ManagerRegistry $doctrine,Security $security, null|int|string $id): JsonResponse
+    public function __invoke(
+            ManagerRegistry $doctrine,
+            Security $security, 
+            null|int|string $id,
+            TokenStorageInterface $token
+        ): JsonResponse
     {
         $this->initialize($doctrine,$security,$id);
 
-        return $this->setSecurityView('deleteAction');
+        return $this->setSecurityView('deleteAction',$token);
     }
 
     public function deleteAction(): JsonResponse
@@ -44,7 +50,11 @@ class GenericDeleteController extends AbstractController
         return $this->respondWithSuccess(JsonResponse::HTTP_OK);
     }
 
-    protected function initialize(ManagerRegistry $doctrine,Security $security, null|int|string $id): void
+    protected function initialize(
+            ManagerRegistry $doctrine,
+            Security $security, 
+            null|int|string $id
+        ): void
     {
         $this->managerRegistry = $doctrine;
         $this->security = $security;

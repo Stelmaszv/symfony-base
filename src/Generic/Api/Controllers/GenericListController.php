@@ -28,19 +28,32 @@ class GenericListController extends AbstractController
     protected array $columns = [];
     private Security $security;
 
-    public function __construct(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security)
+    public function __construct(
+            ManagerRegistry $doctrine,
+            SerializerInterface $serializer, 
+            PaginatorInterface $paginator,
+            Security $security
+        )
     {
         $this->initialize($doctrine, $serializer, $paginator,$security);
     }
 
-    public function __invoke(Request $request,TokenStorageInterface $token): JsonResponse
+    public function __invoke(
+            Request $request,
+            TokenStorageInterface $token
+        ): JsonResponse
     {
         $this->request = $request;
 
         return $this->setSecurityView('listAction',$token);
     }
 
-    protected function initialize(ManagerRegistry $doctrine, SerializerInterface $serializer, PaginatorInterface $paginator,Security $security): void
+    protected function initialize(
+            ManagerRegistry $doctrine, 
+            SerializerInterface $serializer, 
+            PaginatorInterface $paginator,
+            Security $security
+        ): void
     {
         $this->managerRegistry = $doctrine;
         $this->serializer = $serializer;

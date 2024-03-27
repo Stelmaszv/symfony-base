@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Generic\Fixture;
+namespace App\Generic\Components;
+
 use Symfony\Component\Uid\Uuid;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use App\Generic\Api\Identifier\Interfaces\IdentifierUid;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-abstract class FixtureGeneric  extends Fixture
+abstract class AbstractFixtureGeneric  extends Fixture
 {
     protected UserPasswordHasherInterface $passwordEncoder;
     protected ?string $enetity = null;

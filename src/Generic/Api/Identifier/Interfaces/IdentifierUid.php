@@ -2,7 +2,4 @@
 
 
 namespace App\Generic\Api\Identifier\Interfaces;
-interface IdentifierUid
-{
-	
-}
+interface IdentifierUid{}

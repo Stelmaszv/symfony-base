@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericUpdateController extends AbstractController implements GenricInterface
 {
@@ -27,15 +28,28 @@ class GenericUpdateController extends AbstractController implements GenricInterf
     protected null|int|string $id;
     private Security $security;
 
-    public function __invoke(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security, null|int|string $id): JsonResponse
+    public function __invoke(
+            Request $request, 
+            SerializerInterface $serializer, 
+            ValidatorInterface $validator, 
+            ManagerRegistry $managerRegistry,
+            Security $security, null|int|string 
+            $id,TokenStorageInterface $token
+        ): JsonResponse
     {
         $this->initialize($request, $serializer, $validator, $managerRegistry,$security,$id);
         $this->checkData();
 
-        return $this->setSecurityView('updateAction');
+        return $this->setSecurityView('updateAction',$token);
     }
 
-    protected function initialize(Request $request, SerializerInterface $serializer, ValidatorInterface $validator, ManagerRegistry $managerRegistry,Security $security, null|int|string $id): void
+    protected function initialize(
+            Request $request, 
+            SerializerInterface $serializer, 
+            ValidatorInterface $validator, 
+            ManagerRegistry $managerRegistry,
+            Security $security, null|int|string $id
+        ): void
     {
         $this->request = $request;
         $this->security = $security;

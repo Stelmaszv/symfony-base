@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericActionController extends AbstractController
 {
@@ -22,12 +23,16 @@ class GenericActionController extends AbstractController
     protected ManagerRegistry $managerRegistry;
     private Security $security;
 
-    public function __invoke(ManagerRegistry $managerRegistry,Security $security): JsonResponse
+    public function __invoke(
+            ManagerRegistry $managerRegistry,
+            Security $security,
+            TokenStorageInterface $token
+        ): JsonResponse
     {
         $this->managerRegistry = $managerRegistry;
         $this->security = $security;
 
-        return $this->setSecurityView('executeAction');
+        return $this->setSecurityView('executeAction',$token);
     }
 
     private function executeAction(): JsonResponse

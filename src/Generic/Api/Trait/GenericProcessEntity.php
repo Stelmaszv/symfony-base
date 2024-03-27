@@ -9,8 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Generic\Api\Interfaces\ProcessEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
-use App\Generic\Api\Controllers\GenericCreateController;
-use App\Generic\Api\Identifikators\Interfaces\IdetikatorUid;
+use App\Generic\Api\Identifier\Interfaces\IdentifierUid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 trait GenericProcessEntity
@@ -59,7 +58,7 @@ trait GenericProcessEntity
 
         }
 
-        if($entity instanceof IdetikatorUid && $this instanceof ProcessEntity){
+        if($entity instanceof IdentifierUid && $this instanceof ProcessEntity){
             $entity->setId(Uuid::v4());
         }
 

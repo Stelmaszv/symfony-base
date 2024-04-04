@@ -3,7 +3,6 @@
 namespace App\Generic\Api\Controllers;
 
 use App\Generic\Auth\JWT;
-use App\Generic\Api\Trait\GenericTrait;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Generic\Api\Interfaces\ApiInterface;
 use App\Generic\Api\Trait\GenericValidation;

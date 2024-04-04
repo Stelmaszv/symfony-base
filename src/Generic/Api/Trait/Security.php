@@ -21,6 +21,10 @@ trait Security
         
         if((null !== $this->voterAtribute && $subject !== null) || (null !== $this->voterAtribute && $subject === null)){
             
+            if($this->getJWTFromHeader() === null){
+                return new JsonResponse(['success' => false,"message" => 'token not found'], JsonResponse::HTTP_UNAUTHORIZED);
+            }
+
             try {
                 $JWTtokken = $jwt->decode($this->getJWTFromHeader());
             } catch (\Exception $e) {

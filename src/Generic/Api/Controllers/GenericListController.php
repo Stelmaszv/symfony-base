@@ -3,13 +3,14 @@
 namespace App\Generic\Api\Controllers;
 
 use ReflectionClass;
+use App\Generic\Auth\JWT;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -40,12 +41,12 @@ class GenericListController extends AbstractController
 
     public function __invoke(
             Request $request,
-            TokenStorageInterface $token
+            JWT $jwt
         ): JsonResponse
     {
         $this->request = $request;
 
-        return $this->setSecurityView('listAction',$token);
+        return $this->setSecurityView('listAction',$jwt);
     }
 
     protected function initialize(

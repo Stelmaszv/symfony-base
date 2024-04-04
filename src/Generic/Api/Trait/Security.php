@@ -2,6 +2,7 @@
 namespace App\Generic\Api\Trait;
 
 use App\Security\Roles;
+use App\Generic\Auth\JWT;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -10,7 +11,7 @@ trait Security
     protected ?string $voterAtribute = null;
     protected ?string $voterSubject = null;
     
-    private function setSecurityView(string $action,TokenStorageInterface $token): JsonResponse
+    private function setSecurityView(string $action,JWT $jwt): JsonResponse
     {
         $subject = ($this->voterSubject !== null) ? new $this->voterSubject() : null;
 
@@ -19,14 +20,14 @@ trait Security
         }
         
         if((null !== $this->voterAtribute && $subject !== null) || (null !== $this->voterAtribute && $subject === null)){
-
-            $userToken = $token->getToken()?->getUser();
-
-            if($userToken === null){
-                return $this->response();
+            
+            try {
+                $JWTtokken = $jwt->decode($this->getJWTFromHeader());
+            } catch (\Exception $e) {
+                return new JsonResponse(['success' => false,"message" => $e->getMessage()], JsonResponse::HTTP_UNAUTHORIZED);
             }
 
-            foreach($userToken->getRoles() as $role){
+            foreach($JWTtokken['roles'] as $role){
                 if(Roles::checkAtribute($role,$this->voterAtribute)){
                     $vote = $this->security->isGranted($this->voterAtribute, $subject);
                     if($subject !== null && $vote){
@@ -44,5 +45,14 @@ trait Security
     private function response() :JsonResponse
     {
         return new JsonResponse(['success' => false,"message" => 'Access Denied'], JsonResponse::HTTP_UNAUTHORIZED);
+    }
+
+    private function getJWTFromHeader(): ?string
+    {
+        $authorizationHeader = $this->request->headers->get('Authorization');
+        if (strpos($authorizationHeader, 'Bearer ') === 0) {
+            return substr($authorizationHeader, 7);
+        }
+        return null;
     }
 }

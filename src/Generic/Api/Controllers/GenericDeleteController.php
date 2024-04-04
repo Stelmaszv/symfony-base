@@ -2,13 +2,13 @@
 
 namespace App\Generic\Api\Controllers;
 
-use App\Generic\Api\Trait\GenericJSONResponse;
+use App\Generic\Auth\JWT;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Generic\Api\Trait\GenericJSONResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GenericDeleteController extends AbstractController
 {
@@ -26,12 +26,12 @@ class GenericDeleteController extends AbstractController
             ManagerRegistry $doctrine,
             Security $security, 
             null|int|string $id,
-            TokenStorageInterface $token
+            JWT $jwt
         ): JsonResponse
     {
         $this->initialize($doctrine,$security,$id);
 
-        return $this->setSecurityView('deleteAction',$token);
+        return $this->setSecurityView('deleteAction',$jwt);
     }
 
     public function deleteAction(): JsonResponse

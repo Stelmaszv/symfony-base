@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Generic\Api\Controllers;
 
+use App\Generic\Auth\JWT;
 use App\Generic\Api\Interfaces\DTO;
 use App\Generic\Api\Trait\GenericAction;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use App\Generic\Api\Trait\GenericValidation;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use App\Generic\Api\Trait\GenericJSONResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Generic\Api\Trait\Security as SecurityTrait;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 abstract class GenericPostController extends AbstractController
@@ -39,12 +40,13 @@ abstract class GenericPostController extends AbstractController
             ValidatorInterface $validator,
             ManagerRegistry $managerRegistry, 
             Security $security,
-            TokenStorageInterface $token
+            TokenStorageInterface $token,
+            JWT $jwt
         ): JsonResponse
     {
         $this->initialize($request, $serializer, $validator, $managerRegistry,$security);
 
-        return $this->setSecurityView('postAction',$token);
+        return $this->setSecurityView('postAction',$jwt);
     }
 
     protected function initialize(

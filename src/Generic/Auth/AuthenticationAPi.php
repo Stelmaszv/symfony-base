@@ -29,7 +29,7 @@ trait AuthenticationAPi
         $userPayload = [
             'id ' =>  $user->getId(),
             'email' => $user->getEmail(),
-            'rols' => $user->getRoles()
+            'roles' => $user->getRoles()
         ];
 
         return new JsonResponse([

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Generic\Api\Controllers;
 
+use App\Generic\Auth\JWT;
 use App\Generic\Api\Trait\GenericAction;
-use App\Generic\Api\Trait\GenericJSONResponse;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Generic\Api\Trait\GenericJSONResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Generic\Api\Trait\Security as SecurityTrait;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GenericActionController extends AbstractController
 {
@@ -26,13 +26,13 @@ class GenericActionController extends AbstractController
     public function __invoke(
             ManagerRegistry $managerRegistry,
             Security $security,
-            TokenStorageInterface $token
+            JWT $jwt,
         ): JsonResponse
     {
         $this->managerRegistry = $managerRegistry;
         $this->security = $security;
 
-        return $this->setSecurityView('executeAction',$token);
+        return $this->setSecurityView('executeAction',$jwt);
     }
 
     private function executeAction(): JsonResponse

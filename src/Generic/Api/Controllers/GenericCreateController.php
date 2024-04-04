@@ -2,6 +2,7 @@
 
 namespace App\Generic\Api\Controllers;
 
+use App\Generic\Auth\JWT;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Generic\Api\Interfaces\ApiInterface;
 use App\Generic\Api\Trait\GenericValidation;
@@ -16,7 +17,6 @@ use App\Generic\Api\Trait\Security as SecurityTrait;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class GenericCreateController extends AbstractController implements GenricInterface, ProcessEntity
 {
@@ -33,13 +33,13 @@ class GenericCreateController extends AbstractController implements GenricInterf
             ValidatorInterface $validator, 
             ManagerRegistry $managerRegistry,
             Security $security,
-            TokenStorageInterface $token
+            JWT $jwt,
         ): JsonResponse
     {
         $this->initialize($request, $serializer, $validator, $managerRegistry,$security);
         $this->checkData();
 
-        return $this->setSecurityView('createAction',$token);
+        return $this->setSecurityView('createAction',$jwt);
     }
 
     protected function initialize(

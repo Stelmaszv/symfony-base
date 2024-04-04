@@ -4,13 +4,17 @@
 namespace App\Generic\Auth;
 
 use App\Entity\User;
+use App\Roles\RoleUser;
 use Symfony\Flex\Response;
+use Symfony\Component\Uid\Uuid;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Generic\Api\Identifier\Interfaces\IdentifierUid;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 trait AuthenticationAPi
 {
@@ -48,6 +52,50 @@ trait AuthenticationAPi
 
         return new JsonResponse([
             'token' => $this->generateToken($user)
+        ]);
+    }
+
+    #[Route('/api/register', name: 'register', methods: ['POST'])]
+    public function register(Request $request,ManagerRegistry $doctrine, UserPasswordHasherInterface $userPasswordHasher): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $authenticationEntity = new User();
+        $idetikatorUid = $authenticationEntity instanceof IdentifierUid;
+
+        $issetData = isset($data['email']) && isset($data['password']) && isset($data['repeatpassword']);
+        $emptyData = empty($data['email']) && empty($data['password']) && empty($data['repeatpassword']);
+        
+        if(!$issetData && !$emptyData){
+            return new JsonResponse(['message' => 'No data provided'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $user = $doctrine->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+
+        if($user){
+            return new JsonResponse(['message' => 'User Exist!'], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
+        $hashedPassword = $userPasswordHasher->hashPassword(
+            $authenticationEntity,
+            $data['password']
+        );
+
+        if($idetikatorUid){
+            $authenticationEntity->setId(Uuid::v4());
+        }
+
+        $authenticationEntity->setEmail($data['email']);
+        $authenticationEntity->setPassword($hashedPassword);
+        $authenticationEntity->setRoles([RoleUser::NAME]);
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($authenticationEntity);
+        $entityManager->flush();
+
+
+        return new JsonResponse([
+            'token' => $this->generateToken($authenticationEntity)
         ]);
     }
 

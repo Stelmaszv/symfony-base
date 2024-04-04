@@ -2,13 +2,14 @@
 namespace App\Generic\Auth;
 
 use App\Entity\User;
+use App\Roles\RoleUser;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Generic\Api\Identifikators\Interfaces\IdetikatorUid;
+use App\Generic\Api\Identifier\Interfaces\IdentifierUid;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -43,7 +44,7 @@ trait AuthenticationWeb
     public function register(ManagerRegistry $managerRegistry,Request $request, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $authenticationEntity = new User();
-        $idetikatorUid = $authenticationEntity instanceof IdetikatorUid;
+        $idetikatorUid = $authenticationEntity instanceof IdentifierUid;
 
         $form = $this->createForm(RegisterType::class, $authenticationEntity);
         $form->handleRequest($request);
@@ -60,7 +61,7 @@ trait AuthenticationWeb
             }
 
             $authenticationEntity->setPassword($hashedPassword);
-            $authenticationEntity->setRoles(["SHOW"]);
+            $authenticationEntity->setRoles([RoleUser::NAME]);
 
             $entityManager = $managerRegistry->getManager();
             $entityManager->persist($authenticationEntity);

@@ -6,7 +6,6 @@ namespace App\Generic\Auth;
 use Symfony\Flex\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 trait AuthenticationAPi
 {
